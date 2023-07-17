@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <link rel="icon" href="favicon.png" type="image/png">
+  <title>Responsive Image Vue-Lightbox</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="header__container">
+    <h1>Vue Lightbox</h1>
+    <p>
+      Component based approach using Vue as a library. Splitting of image gallery code and viewer code
+      with individual scope. Features: slide, fit, zoom, pan, fullscreen, key control.
+    </p>
+  </div>
+
+  <div id="app">
+    <app />
+  </div>
+
+  <template id="app-template">
+    <main class="main">
+      <gallery></gallery>
+      <lightbox></lightbox>
+    </main>
+  </template>
+
+  <template id="gallery-template">
+    <div class="wrapper">
+      <div class="toggler">
+        <div class="justify-center">
+          <input type="checkbox" id="theme" v-model="togglerState">
+          <label for="theme">IMG</label>
+        </div>
+
+        <div @click="reload" class="btn refresh-btn">
+          <span class="fas fa-sync-alt"></span>
+        </div>
+      </div>
+
+      <div @click="onClickGallery" class="gallery grid">
+        <div
+          class="image"
+          :class="{ content: togglerState, flow: togglerState }"
+          v-for="({ src }, i) in source"
+          :key="i"
+        >
+          <template v-if="togglerState">
+            <img :src="src" alt="">
+          </template>
+          <template v-else>
+            <a href="javascript:void(0)">{{ src }}</a>
+          </template>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template id="lightbox-template">
+    <div class="lightbox">
+      <div
+        @click="close"
+        :style="{ display: gallery.length ? 'block' : 'none' }"
+        class="shadow"
+      ></div>
+
+      <div class="preview-box" :class="{ show: gallery.length }" ref="previewBox">
+        <div class="details">
+          <span class="title">
+            <p class="current-img">{{ newIndex + 1 }}</p> / <p class="total-img">{{ gallery.length }}</p>
+          </span>
+
+          <div class="actions">
+            <span @click="toggle" class="icon fas fa-expand"></span>
+            <span @click="close" class="icon fas fa-times"></span>
+          </div>
+        </div>
+
+        <div class="image-box" :class="{ fullscreen: isFullscreen }">
+          <img :src="gallery[newIndex]" alt="" ref="previewImg">
+
+          <div
+            class="pan-overlay"
+            @mousedown="panStart"
+            @mouseup="panStop"
+            @dblclick="panTo"
+            @wheel="wheel"
+            ref="overlay"
+          ></div>
+
+          <div
+            @click="prevBtnClick"
+            :class="{ hide: prevBtnHide }"
+            class="slide prev"
+          >
+            <i class="fas fa-angle-left"></i>
+          </div>
+          <div
+            @click="nextBtnClick"
+            :class="{ hide: nextBtnHide }"
+            class="slide next"
+          >
+            <i class="fas fa-angle-right"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+  <script src="lightbox.js"></script>
+  <script src="gallery.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
