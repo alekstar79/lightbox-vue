@@ -148,6 +148,15 @@ new Vue({
     components: {
       lightbox,
       gallery
+    },
+    data: () => ({
+      openData: {}
+    }),
+    methods: {
+      openLightbox(data)
+      {
+        this.openData = data
+      }
     }
   })
 })

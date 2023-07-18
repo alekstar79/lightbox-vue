@@ -143,6 +143,20 @@ const lightbox = Vue.component('lightbox', {
   components: {
     keybind
   },
+  props: {
+    eventbus: {
+      type: Boolean,
+      default: false
+    },
+    openData: {
+      type: Object,
+      default: () => ({})
+    }
+  },
+  model: {
+    prop: 'openData',
+    event: 'change'
+  },
   data: () => ({
     isFullscreen: false,
     renderer: null,
@@ -167,6 +181,9 @@ const lightbox = Vue.component('lightbox', {
     {
       return this.newIndex === 0
     }
+  },
+  watch: {
+    openData: 'open'
   },
   methods: {
     async toggle()
@@ -212,8 +229,10 @@ const lightbox = Vue.component('lightbox', {
         y: e.clientY
       })
     },
-    open(idx, list)
+    open({ idx, list })
     {
+      if (typeof idx === 'undefined') return
+
       document.body.style.overflow = 'hidden'
 
       this.panTo()
@@ -224,6 +243,7 @@ const lightbox = Vue.component('lightbox', {
     {
       document.body.style.overflow = 'auto'
 
+      this.$emit('change', {})
       this.newIndex = this.clickedIndex
       this.gallery = []
 
@@ -263,9 +283,9 @@ const lightbox = Vue.component('lightbox', {
   {
     await this.$nextTick()
 
-    this.$bus.$on('open', ({ currentIdx, list }) => {
-      this.open(currentIdx, list)
-    })
+    if (this.eventbus) {
+      this.$bus.$on('lightbox:open', this.open)
+    }
 
     this.renderer = Renderer.init({
       element: this.$refs.previewImg,

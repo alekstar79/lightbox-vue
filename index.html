@@ -22,15 +22,15 @@
 
   <template id="app-template">
     <main class="main">
-      <gallery></gallery>
-      <lightbox></lightbox>
+      <gallery @lightbox:open="openLightbox" eventbus></gallery>
+      <lightbox v-model="openData" eventbus></lightbox>
     </main>
   </template>
 
   <template id="gallery-template">
     <div class="wrapper">
       <div class="toggler">
-        <div class="justify-center">
+        <div class="checkbox switcher">
           <input type="checkbox" id="theme" v-model="togglerState">
           <label for="theme">IMG</label>
         </div>
