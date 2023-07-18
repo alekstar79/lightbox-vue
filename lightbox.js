@@ -1,136 +1,3 @@
-const name2code = { ArrowLeft: 37, ArrowRight: 39 }
-
-class PhysicalKey
-{
-  constructor(keyCode)
-  {
-    this.keyCode = keyCode
-  }
-
-  static fromEvent({ keyCode })
-  {
-    return new PhysicalKey(keyCode)
-  }
-
-  static fromString(s)
-  {
-    let S = s.toUpperCase(),
-      keyCode = null
-
-    if (s.length === 1) {
-      return new PhysicalKey(s.toUpperCase().charCodeAt(0))
-    }
-    if (s in name2code || S in name2code) {
-      keyCode = name2code[s] || name2code[S]
-    }
-    if (!keyCode) {
-      throw new Error(`Unknown key name: ${s}`)
-    }
-
-    return new PhysicalKey(keyCode)
-  }
-
-  equals({ keyCode })
-  {
-    return this.keyCode === keyCode
-  }
-}
-
-class KeyCombination
-{
-  constructor(key)
-  {
-    this.key = PhysicalKey.fromString(key)
-  }
-
-  match(e)
-  {
-    return this.key.equals(PhysicalKey.fromEvent(e))
-  }
-}
-
-class Keybind
-{
-  constructor(kc, handler)
-  {
-    this.combination = kc
-    this.handler = handler
-  }
-}
-
-class Bindings
-{
-  static self = null
-
-  static init(source)
-  {
-    Bindings.self ||= new Bindings()
-
-    source && Bindings.self.bind(source) && Bindings.self.track()
-
-    return Bindings.self
-  }
-
-  constructor()
-  {
-    ['handler','untrack','track','unbind','bind','dispose'].forEach(f => {
-      this[f] = this[f].bind(this)
-    })
-
-    this.keybinds = new Set()
-  }
-
-  handler(e)
-  {
-    if (e.repeat) return
-
-    for (const kb of this.keybinds) {
-      if (!kb.combination.match(e)) continue
-
-      e.stopImmediatePropagation()
-      e.preventDefault()
-
-      kb.handler(e)
-
-      break
-    }
-  }
-
-  on(keys, handler)
-  {
-    const kb = new Keybind(new KeyCombination(keys), handler)
-
-    this.keybinds.add(kb)
-
-    return kb
-  }
-
-  bind(source)
-  {
-    return source.map(b => this.on(b.keys, b.handler))
-  }
-
-  unbind(map)
-  {
-    map.forEach(kb => this.keybinds.delete(kb))
-  }
-
-  track()
-  {
-    window.addEventListener('keydown', this.handler)
-  }
-
-  untrack()
-  {
-    window.removeEventListener('keydown', this.handler)
-  }
-
-  dispose()
-  {
-    this.keybinds.clear()
-  }
-}
-
 class Renderer
 {
   static instance
@@ -273,23 +140,24 @@ function whichBtn(e, which = 1)
 const lightbox = Vue.component('lightbox', {
   template: '#lightbox-template',
 
-  data() {
-    return {
-      isFullscreen: false,
-
-      renderer: null,
-      keyboard: Bindings.init([
-        { keys: 'ArrowRight', handler: this.nextBtnClick },
-        { keys: 'ArrowLeft',  handler: this.prevBtnClick }
-      ]),
-
-      clickedIndex: 0,
-      newIndex: 0,
-      gallery: [],
-
-      down: false
-    }
+  components: {
+    keybind
   },
+  data: () => ({
+    isFullscreen: false,
+    renderer: null,
+
+    multiple: [
+      { /* ArrowLeft  */ keyCode: 37, preventDefault: true },
+      { /* ArrowRight */ keyCode: 39, preventDefault: true }
+    ],
+
+    clickedIndex: 0,
+    newIndex: 0,
+    gallery: [],
+
+    down: false
+  }),
   computed: {
     nextBtnHide()
     {
@@ -378,6 +246,17 @@ const lightbox = Vue.component('lightbox', {
       this.panTo()
 
       this.newIndex--
+    },
+    handler({ event })
+    {
+      switch (event.key) {
+        case 'ArrowRight':
+          this.nextBtnClick()
+          break
+        case 'ArrowLeft':
+          this.prevBtnClick()
+          break
+      }
     }
   },
   async mounted()

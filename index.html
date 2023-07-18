@@ -18,9 +18,7 @@
     </p>
   </div>
 
-  <div id="app">
-    <app />
-  </div>
+  <div id="app"></div>
 
   <template id="app-template">
     <main class="main">
@@ -36,7 +34,6 @@
           <input type="checkbox" id="theme" v-model="togglerState">
           <label for="theme">IMG</label>
         </div>
-
         <div @click="reload" class="btn refresh-btn">
           <span class="fas fa-sync-alt"></span>
         </div>
@@ -68,12 +65,13 @@
         class="shadow"
       ></div>
 
+      <keybind :multiple-keys="multiple" @success="handler"></keybind>
+
       <div class="preview-box" :class="{ show: gallery.length }" ref="previewBox">
         <div class="details">
           <span class="title">
             <p class="current-img">{{ newIndex + 1 }}</p> / <p class="total-img">{{ gallery.length }}</p>
           </span>
-
           <div class="actions">
             <span @click="toggle" class="icon fas fa-expand"></span>
             <span @click="close" class="icon fas fa-times"></span>
@@ -112,6 +110,7 @@
   </template>
 
   <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+  <script src="keybind.js"></script>
   <script src="lightbox.js"></script>
   <script src="gallery.js"></script>
   <script src="main.js"></script>
