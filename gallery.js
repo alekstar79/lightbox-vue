@@ -11,6 +11,7 @@ const gallery = Vue.component('gallery', {
     }
   },
   data: () => ({
+    theme: 'light',
     list: 'img',
     source: []
   }),
@@ -21,6 +22,14 @@ const gallery = Vue.component('gallery', {
       },
       get() {
         return this.list === 'img'
+      }
+    },
+    light: {
+      set(theme) {
+        this.theme = theme ? 'light' : 'dark'
+      },
+      get() {
+        return this.theme === 'light'
       }
     }
   },
@@ -51,6 +60,12 @@ const gallery = Vue.component('gallery', {
       this.eventbus
         ? this.$bus.$emit(expose, data)
         : this.$emit(expose, data)
+    },
+    toggleTheme()
+    {
+      document.documentElement.classList.toggle('dark-theme')
+
+      this.light = !this.light
     },
     reload()
     {

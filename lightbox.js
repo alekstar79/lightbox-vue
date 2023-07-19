@@ -42,8 +42,9 @@ const lightbox = Vue.component('lightbox', {
     renderer: null,
 
     multiple: [
+      { /* ArrowRight */ keyCode: 39, preventDefault: true },
       { /* ArrowLeft  */ keyCode: 37, preventDefault: true },
-      { /* ArrowRight */ keyCode: 39, preventDefault: true }
+      { /* Escape     */ keyCode: 27, preventDefault: true }
     ],
 
     clickedIndex: 0,
@@ -68,9 +69,7 @@ const lightbox = Vue.component('lightbox', {
   methods: {
     async toggle()
     {
-      await this.$fullscreen.toggle(this.$refs.previewBox)
-
-      this.isFullscreen = this.$fullscreen.isFullscreen
+      this.isFullscreen = await this.$fullscreen.toggle(this.$refs.previewBox)
     },
     panTo()
     {
@@ -150,6 +149,9 @@ const lightbox = Vue.component('lightbox', {
     handler({ event })
     {
       switch (event.key) {
+        case 'Escape':
+          this.isFullscreen = this.$fullscreen.isFullscreen
+          break
         case 'ArrowRight':
           this.nextBtnClick()
           break

@@ -37,6 +37,9 @@
         <div @click="reload" class="btn refresh-btn">
           <span class="fas fa-sync-alt"></span>
         </div>
+        <div @click="toggleTheme" class="btn theme-btn">
+          <span :class="`fas fa-${light ? 'moon' : 'sun'}`"></span>
+        </div>
       </div>
 
       <div @click="onClickGallery" class="gallery grid">
@@ -67,14 +70,22 @@
 
       <keybind :multiple-keys="multiple" @success="handler"></keybind>
 
-      <div class="preview-box" :class="{ show: gallery.length }" ref="previewBox">
+      <div
+        class="preview-box"
+        :class="{ fullscreen: isFullscreen, show: gallery.length }"
+        ref="previewBox"
+      >
         <div class="details">
           <span class="title">
             <p class="current-img">{{ newIndex + 1 }}</p> / <p class="total-img">{{ gallery.length }}</p>
           </span>
           <div class="actions">
-            <span @click="toggle" class="icon fas fa-expand"></span>
-            <span @click="close" class="icon fas fa-times"></span>
+            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512" @click="toggle" class="icon">
+              <path d="M32 32C14.3 32 0 46.3 0 64v96c0 17.7 14.3 32 32 32s32-14.3 32-32V96h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H32zM64 352c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7 14.3 32 32 32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H64V352zM320 32c-17.7 0-32 14.3-32 32s14.3 32 32 32h64v64c0 17.7 14.3 32 32 32s32-14.3 32-32V64c0-17.7-14.3-32-32-32H320zM448 352c0-17.7-14.3-32-32-32s-32 14.3-32 32v64H320c-17.7 0-32 14.3-32 32s14.3 32 32 32h96c17.7 0 32-14.3 32-32V352z"/>
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512" @click="close" class="icon">
+              <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/>
+            </svg>
           </div>
         </div>
 
@@ -95,14 +106,18 @@
             :class="{ hide: prevBtnHide }"
             class="slide prev"
           >
-            <i class="fas fa-angle-left"></i>
+            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512">
+              <path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/>
+            </svg>
           </div>
           <div
             @click="nextBtnClick"
             :class="{ hide: nextBtnHide }"
             class="slide next"
           >
-            <i class="fas fa-angle-right"></i>
+            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512">
+              <path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/>
+            </svg>
           </div>
         </div>
       </div>
