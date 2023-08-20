@@ -1,4 +1,4 @@
-let list = fetch('/api/index.json'),
+let list = fetch(`${window.location.pathname}api/index.json`),
   fn = (_, i) => ({ idx: `${i + 1}`.padStart(2, '0'), src: `img-${`${i + 1}`.padStart(2, '0')}.jpg`}),
   source = Array.from({ length: 28 }, fn),
   expose = 'lightbox:open'
