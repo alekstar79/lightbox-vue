@@ -6,27 +6,10 @@
   <link rel="icon" href="favicon.png" type="image/png">
   <title>Responsive Image Vue-Lightbox</title>
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
 </head>
 <body>
-  <div class="header__container">
-    <h1>Vue Lightbox</h1>
-    <p>
-      Component based approach using Vue as a library. Splitting of image gallery code and viewer code
-      with individual scope. Features: slide, fit, zoom, pan, fullscreen, key control.
-    </p>
-  </div>
-
-  <div id="app"></div>
-
-  <template id="app-template">
-    <main class="main">
-      <gallery @lightbox:open="openLightbox" eventbus></gallery>
-      <lightbox v-model="openData" eventbus></lightbox>
-    </main>
-  </template>
-
   <template id="gallery-template">
     <div class="wrapper">
       <div class="toggler">
@@ -42,20 +25,27 @@
         </div>
       </div>
 
-      <div @click="onClickGallery" class="gallery grid">
-        <div
-          class="image"
-          :class="{ content: togglerState, flow: togglerState }"
-          v-for="({ src }, i) in source"
-          :key="i"
-        >
-          <template v-if="togglerState">
-            <img :src="src" alt="">
-          </template>
-          <template v-else>
+      <div @click="onClickGallery" class="gallery grid" :key="update">
+        <template v-if="togglerState">
+          <div
+            v-for="({ idx, src, loaded, w, h }, i) in shuffled"
+            :class="[`flow-${idx}`, { loaded }]"
+            class="image content flow"
+            :key="idx"
+          >
+            <img
+              v-lazy="{ src, loaded, w, h }"
+              :alt="`image number ${i + 1}`"
+              loading="lazy"
+              src
+            >
+          </div>
+        </template>
+        <template v-else>
+          <div v-for="({ src }, i) in shuffled" class="link" :key="i">
             <a href="javascript:void(0)">{{ src }}</a>
-          </template>
-        </div>
+          </div>
+        </template>
       </div>
     </div>
   </template>
@@ -90,7 +80,7 @@
         </div>
 
         <div class="image-box" :class="{ fullscreen: isFullscreen }">
-          <img :src="gallery[newIndex]" alt="" ref="previewImg">
+          <img :src="gallery[newIndex] ? `images/${gallery[newIndex]}` : ''" alt="" ref="previewImg">
 
           <div
             class="pan-overlay"
@@ -101,20 +91,12 @@
             ref="overlay"
           ></div>
 
-          <div
-            @click="prevBtnClick"
-            :class="{ hide: prevBtnHide }"
-            class="slide prev"
-          >
+          <div @click="prevBtnClick" class="slide prev" :class="{ hide: prevBtnHide }">
             <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512">
               <path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/>
             </svg>
           </div>
-          <div
-            @click="nextBtnClick"
-            :class="{ hide: nextBtnHide }"
-            class="slide next"
-          >
+          <div @click="nextBtnClick" class="slide next" :class="{ hide: nextBtnHide }">
             <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512">
               <path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/>
             </svg>
@@ -124,10 +106,23 @@
     </div>
   </template>
 
+  <div class="header__container">
+    <h1>Vue Lightbox</h1>
+    <p>
+      Component based approach using Vue as a library. Splitting of image gallery code and viewer code
+      with individual scope. Features: slide, fit, zoom, pan, fullscreen, key control.
+    </p>
+  </div>
+
+  <main id="app" class="main">
+    <gallery @lightbox:open="openLightbox" eventbus></gallery>
+    <lightbox v-model="openData" eventbus></lightbox>
+  </main>
+
   <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+  <script src="gallery.js"></script>
   <script src="keybind.js"></script>
   <script src="lightbox.js"></script>
-  <script src="gallery.js"></script>
   <script src="main.js"></script>
 </body>
 </html>

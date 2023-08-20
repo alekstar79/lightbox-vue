@@ -262,7 +262,7 @@ Vue.prototype.$bus = new Vue()
 
 new Vue({
   render: h => h({
-    template: '#app-template',
+    el: '#app',
 
     components: {
       lightbox,
